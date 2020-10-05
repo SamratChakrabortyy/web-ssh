@@ -1,0 +1,17 @@
+{
+  "name": "WebSSH",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.12.3",
+    "pty.js": "^0.2.7-1",
+    "socket.io": "^1.3.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Jakub Mandula<jakub.aludnam@gmail.com",
+  "license": "MIT"
+}

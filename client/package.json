@@ -1,0 +1,14 @@
+{
+  "name": "WebSSHClient",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ssh.js",
+  "dependencies": {
+    "socket.io-client": "^2.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node ssh.js"
+  },
+  "author": "Samrat Chakraborty<samratch@outlook.com>"
+}
