@@ -28,6 +28,8 @@
   // Connect to the socket.io server
   var socket = io.connect('http://ws-control.machinesense.com:8080/');
 
+  socket.emit('term/lb1', 'start');
+
   // Wait for data from the server
   socket.on('output/lb1', function (data) {
     // Insert some line breaks where they belong

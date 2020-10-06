@@ -4,7 +4,7 @@ var id = ""
 var pty = require('/usr/src/node-pty');
 var term;
 
-io.on('connect', function (io) {
+io.on('term/lb1', function (io) {
   console.log('Socket Connected');
   term = pty.spawn('sh', [], {
     name: 'xterm-color',
