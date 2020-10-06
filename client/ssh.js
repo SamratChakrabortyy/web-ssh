@@ -4,7 +4,7 @@ var id = ""
 var pty = require('node-pty');
 var term;
 
-io.on('connect', function (io){
+io.on('connect', function (io) {
   term = pty.spawn('sh', [], {
     name: 'xterm-color',
     cols: 80,
@@ -12,22 +12,26 @@ io.on('connect', function (io){
     cwd: process.env.HOME,
     env: process.env
   });
+
+  term.on('data', function (data) {
+    io.emit(`output/${id}`, data);
+  });
+
+  io.on(`input/${id}`, function (data) {
+    term.write(data);
+  })
+
+  io.on('resize', function (data) {
+    term.resize(data[0], data[1]);
+  });
+
+  io.on('resize', function (data) {
+    term.resize(data[0], data[1]);
+  });
+
+  // When socket disconnects, destroy the terminal
+  io.on("disconnect", function () {
+    term.destroy();
+    console.log("bye");
+  });
 })
-
-io.on(`input/${id}`, function(data){
-  term.write(data);
-})
-
-term.on('data', function(data){
-  io.emit(`output/${id}`, data);
-});
-
-io.on('resize', function(data){
-  term.resize(data[0], data[1]);
-});
-
-// When socket disconnects, destroy the terminal
-io.on("disconnect", function(){
-  term.destroy();
-  console.log("bye");
-});
