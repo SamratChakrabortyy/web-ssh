@@ -1,19 +1,19 @@
 var express = require('express');
-var https = require('https');
+//var https = require('https');
 var http = require('http');
-var fs = require('fs');
+//var fs = require('fs');
 
 //var pty = require('pty.js');
-var pty = require('node-pty');
+var pty = require('/usr/src/node-pty');
 
 
 // Setup the express app
 var app = express();
 // HTTPS key and certificate files
-var options = {
+/* var options = {
   key: fs.readFileSync('keys/key.pem'),
   cert: fs.readFileSync('keys/cert.pem')
-};
+}; */
 
 // Create Server using the app and bind it to a port
 //https.createServer(options, app).listen(4000)
@@ -24,7 +24,7 @@ app.use("/",express.static("./"));
 
 // Bind socket.io to the server
 var io = require('socket.io')(server);
-
+/* 
 
 // When a new socket connects
 io.on('connection', function(socket){
@@ -57,3 +57,4 @@ io.on('connection', function(socket){
     console.log("bye");
   });
 });
+ */
