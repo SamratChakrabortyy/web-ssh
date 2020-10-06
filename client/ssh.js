@@ -1,7 +1,7 @@
 var io = require("socket.io-client")('http://ws-control.machinesense.com:8080');
 var id = ""
 
-var pty = require('node-pty');
+var pty = require('/usr/src/node-pty');
 var term;
 
 io.on('connect', function (io) {
