@@ -3,9 +3,17 @@ var id = ""
 
 var pty = require('/usr/src/node-pty');
 var term;
-
-io.on('term/lb1', function (io) {
+io.on('connect', function(){  
   console.log('Socket Connected');
+  io.on("disconnect", function () {
+    console.log(`disconnect `);
+    if(term != undefined)
+      term.destroy();
+    console.log("bye");
+  });
+})
+io.on('term/lb1', function () {
+  console.log('Opening term');
   term = pty.spawn('sh', [], {
     name: 'xterm-color',
     cols: 80,
