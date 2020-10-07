@@ -11,6 +11,5 @@
   "scripts": {
     "start": "node server.js"
   },
-  "author": "Jakub Mandula<jakub.aludnam@gmail.com",
-  "license": "MIT"
+  "author": "<Samrat Chakraborty<samratch@outlook.com>"
 }

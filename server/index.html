@@ -3,7 +3,9 @@
 <head>
   <title>SSH Client</title>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script type="application/javascript" src="http://ipinfo.io/?format=jsonp&callback=getIP"></script>
+
   <style>
     body {
       margin: 0;
@@ -22,6 +24,10 @@
   <h1>SSH</h1>
 
   <div class="terminal">
+  <!--<ul id="messages"></ul>
+  <form action="">
+    <input id="m" autocomplete="off" /><button>Send</button>
+  </form>-->
 
   </div>
   <script>
@@ -29,9 +35,20 @@
   //var socket = io.connect('http://ws-control.machinesense.com:8080/');
 
   var socket = io();
+  var id = "web";
   socket.on('connect', function(){
     console.log('socket Connected');
-    socket.emit('term-lb1', 'start');
+    socket.emit('register', id);
+    socket.on('register', (msg) => {
+      if(msg == 'successful'){
+        let termMsg = {
+          to : 'ssh',
+          from : id,
+          body : 'start'
+        };
+        socket.emit('term', JSON.stringify(termMsg));
+      }
+    })
   });
   //socket.on('event', function(data){});
   socket.on('disconnect', function(){
@@ -39,10 +56,8 @@
 
   });
 
-  socket.emit('term-lb1', 'start');
-
   // Wait for data from the server
-  socket.on('output-lb1', function (data) {
+  socket.on('output', function (data) {
     // Insert some line breaks where they belong
       data = data.replace("\n", "<br>");
       data = data.replace("\r", "<br>");
@@ -50,12 +65,32 @@
       $('.terminal').append(data);
   });
 
+  $(function () {
+    //var socket = io();
+    $('form').submit(function(e) {
+      e.preventDefault(); // prevents page reloading
+      var data = {};
+      data.from = "temp";
+      data.to = "temp"
+      data.body = $('#m').val();
+      socket.emit('input', JSON.stringify(data));
+      $('#m').val('');
+      return false;
+    });
+    socket.on('input', function(msg){
+      console.log('input', msg);
+    })
+    socket.on('output', function(msg){
+      $('#messages').append($('<li>').text(JSON.parse(msg).body));
+    });
+  });
+
   // Listen for user input and pass it to the server
   $(document).on("keypress",function(e){
     var char = "";
     char = String.fromCharCode(e.which);
 
-    socket.emit("input-lb1", char);
+    socket.emit("input", char);
   });
 
   </script>
