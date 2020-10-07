@@ -18,13 +18,7 @@ io.on('connect', function(socket){
 })
 io.on('term', function (termMsg) {
   console.log('Opening term');
-  term = pty.spawn('sh', [], {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 30,
-    cwd: process.env.HOME,
-    env: process.env
-  });
+  
 
  /*  term.on('data', function (data) {
     console.log(`terminal data size ${data.length}`);
@@ -35,27 +29,49 @@ io.on('term', function (termMsg) {
     }
     io.emit(`output`, JSON.stringify(msg));
   }); */
-
+  var isTerm = false;
   io.on(`input`, function (message) {
     try{
       message = JSON.parse(message);
       if(message == undefined || !message instanceof Object || message.to == undefined || message.from == undefined || message.body == undefined)
         throw new Error('Invalid Message template');
-      term.write(message.body);
-      term.on('data', function (data) {
-        console.log(`terminal data size ${data.length}`);
-        let msg = {
-          to : message.from,
-          from : id,
-          body : data
-        }
-        io.emit(`output`, JSON.stringify(msg));
-      });
+      else
+        execute(message);
     } catch (ex){
       console.error('Error while transmitting message', ex);
       io.emit('input', ex.message);
     }
   })
+
+  function execute(message){
+    console.log('executing', msg);
+    try{
+      let msg = {
+        to : message.from,
+        from : id
+      }
+      if(term == undefined){
+        term = pty.spawn('sh', [], {
+          name: 'xterm-color',
+          cols: 80,
+          rows: 30,
+          cwd: process.env.HOME,
+          env: process.env
+        });
+        term.on('data', function (data) {
+          console.log(`terminal data size ${data.length}`);
+          msg.body = data;
+          io.emit(`output`, JSON.stringify(msg));
+        });
+        isTerm = true;
+      }
+      term.write(message.body);
+    } catch(ex){
+      console.log('Error executing command', ex);
+      msg.body = ex.message
+      io.emit('output', JSON.stringify(msg));
+    }
+  }
 
   io.on('resize', function (data) {
     console.log(`resize data ${data}`);
@@ -66,6 +82,7 @@ io.on('term', function (termMsg) {
   io.on("disconnect", function () {
     console.log(`disconnect data  ${data}`);
     term.destroy();
+    isTerm = false;
     console.log("bye");
   });
 })

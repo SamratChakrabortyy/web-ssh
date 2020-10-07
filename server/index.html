@@ -44,9 +44,9 @@
         let termMsg = {
           to : 'ssh',
           from : id,
-          body : 'start'
+          body : 'pwd'
         };
-        socket.emit('term', JSON.stringify(termMsg));
+        socket.emit('input', JSON.stringify(termMsg));
       }
     })
   });
