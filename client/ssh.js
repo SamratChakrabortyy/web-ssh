@@ -12,7 +12,7 @@ io.on('connect', function(){
     console.log("bye");
   });
 })
-io.on('term/lb1', function () {
+io.on('term-lb1', function () {
   console.log('Opening term');
   term = pty.spawn('sh', [], {
     name: 'xterm-color',
@@ -24,10 +24,10 @@ io.on('term/lb1', function () {
 
   term.on('data', function (data) {
     console.log(`terminal data size ${data.length}`);
-    io.emit(`output/${id}`, data);
+    io.emit(`output-${id}`, data);
   });
 
-  io.on(`input/${id}`, function (data) {
+  io.on(`input-${id}`, function (data) {
     console.log(`input data  ${data}`);
     term.write(data);
   })

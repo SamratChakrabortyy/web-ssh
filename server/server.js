@@ -24,9 +24,9 @@ app.use("/",express.static("./"));
 
 // Bind socket.io to the server
 var io = require('socket.io')(server);
-io.on('term/lb1', function(socket){
+io.on('term-lb1', function(socket){
   console.log("term");
-  io.emit('term/lb1',"start");
+  io.emit('term-lb1',"start");
 });/* 
 
 // When a new socket connects
