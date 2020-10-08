@@ -7,7 +7,7 @@ io.on('connect', function(socket){
   console.log('Socket Connected');
   io.emit('register', id);
   io.on('register', (regMsg) =>{
-    console.log(regMsg);
+    console.log('Registation msg', regMsg);
   })
   io.on("disconnect", function () {
     console.log(`disconnect `);
@@ -32,11 +32,14 @@ io.on('term', function (termMsg) {
   var isTerm = false;
   io.on(`input`, function (message) {
     try{
+      console.log('Input message', message);
       message = JSON.parse(message);
       if(message == undefined || !message instanceof Object || message.to == undefined || message.from == undefined || message.body == undefined)
         throw new Error('Invalid Message template');
-      else
+      else{
+        console.log('Executing message', message);
         execute(message);
+      }
     } catch (ex){
       console.error('Error while transmitting message', ex);
       io.emit('input', ex.message);
@@ -44,7 +47,7 @@ io.on('term', function (termMsg) {
   })
 
   function execute(message){
-    console.log('executing', msg);
+    console.log('executing', message);
     try{
       let msg = {
         to : message.from,

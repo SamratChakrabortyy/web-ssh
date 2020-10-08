@@ -34,11 +34,12 @@ io.on('connection', function(socket){
       io.to(socket.id).emit('register', 'falied');
       return;
     }
-    console.log(`new Registration for ${data}`);
+    console.log(`new Registration for ${data} sock Id ${socket.id}`);
     clientIdMap[data] = socket.id;
     idClientMap[socket.id] = data;
+    console.log('Client Id Map', clientIdMap);
     console.log(`${data} successfully registered`);
-    io.emit('register','successful');
+    io.to(socket.id).emit('register','successful');
   });
 
   socket.on('input', (data) => {
@@ -69,6 +70,7 @@ io.on('connection', function(socket){
         throw new Error('Invalid Message template');
       if(clientIdMap[message.to] == undefined)
         throw new Error(`${message.to} Reciver offline`);
+      console.log(`Sending ${event} to sock id ${clientIdMap[message.to]} body ${message.body}`);
       io.to(clientIdMap[message.to]).emit(event, JSON.stringify(message));
       io.to(socket.id).emit(event, 'successful');
     } catch (ex){
