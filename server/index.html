@@ -60,9 +60,11 @@
   socket.on('output', function (msg) {
      // Insert some line breaks where they belong
       msg = JSON.parse(msg);
-      let data = msg.body;
-      data = data.replace("\n", "<br>");
-      data = data.replace("\r", "<br>");
+      let arr = msg.body.split(/\r\n/);
+      let data = "";
+      for(let idx in arr){
+        data += '<pr>'+arr[idx]+'</pr>';
+      }
       // Append the data to our terminal
       $('.terminal').append(data);
   });

@@ -75,7 +75,7 @@ io.on('connect', function(){
         });
         isTerm = true;
       }
-      term.write(message.body);
+      term.write(message.body+'\r\n');
     } catch(ex){
       console.log('Error executing command', ex);
       msg.body = ex.message
