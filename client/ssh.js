@@ -57,6 +57,17 @@ io.on('connect', function(){
           cwd: process.env.HOME,
           env: process.env
         });
+        if(msg.body == 'term'){
+          term.destroy();
+          term = pty.spawn('sh', [], {
+            name: 'xterm-color',
+            cols: 80,
+            rows: 30,
+            cwd: process.env.HOME,
+            env: process.env
+          });
+          msg.body = 'pwd';
+        }
         term.on('data', function (data) {
           console.log(`terminal data size ${data.length}`);
           msg.body = data;

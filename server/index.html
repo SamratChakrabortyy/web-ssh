@@ -44,7 +44,7 @@
         let termMsg = {
           to : 'ssh',
           from : id,
-          body : 'pwd'
+          body : 'term'
         };
         socket.emit('input', JSON.stringify(termMsg));
       }
