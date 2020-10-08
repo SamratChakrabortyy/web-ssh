@@ -57,8 +57,10 @@
   });
 
   // Wait for data from the server
-  socket.on('output', function (data) {
-    // Insert some line breaks where they belong
+  socket.on('output', function (msg) {
+     // Insert some line breaks where they belong
+      msg = JSON.parse(msg);
+      let data = msg.body;
       data = data.replace("\n", "<br>");
       data = data.replace("\r", "<br>");
       // Append the data to our terminal
@@ -89,7 +91,11 @@
   $(document).on("keypress",function(e){
     var char = "";
     char = String.fromCharCode(e.which);
-
+    let termMsg = {
+          to : 'ssh',
+          from : id,
+          body : char
+        };
     socket.emit("input", char);
   });
 

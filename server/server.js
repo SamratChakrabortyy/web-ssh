@@ -43,7 +43,8 @@ io.on('connection', function(socket){
   });
 
   socket.on('input', (data) => {
-    try {
+    try { 
+      console.log('input data 1', data);
       data = JSON.parse(data);
       console.log(`input data`, data);
       transmit('input', data);
@@ -55,8 +56,9 @@ io.on('connection', function(socket){
 
   socket.on('output', (data) => {
     try {
+      console.log('output data 1', data);
       data = JSON.parse(data);
-      console.data(`output data`, data);
+      console.log(`output data`, data);
       transmit('output', data);
     } catch(ex){
       console.error('Error at output event', ex);
@@ -72,7 +74,7 @@ io.on('connection', function(socket){
         throw new Error(`${message.to} Reciver offline`);
       console.log(`Sending ${event} to sock id ${clientIdMap[message.to]} body ${message.body}`);
       io.to(clientIdMap[message.to]).emit(event, JSON.stringify(message));
-      io.to(socket.id).emit(event, 'successful');
+      io.to(clientIdMap[message.from]).emit(event, 'successful');
     } catch (ex){
       console.error('Error while transmitting message', ex);
       io.to(socket.id).emit(event, ex.message);

@@ -3,7 +3,7 @@ var id = "ssh"
 
 var pty = require('/usr/src/node-pty');
 var term;
-io.on('connect', function(socket){  
+io.on('connect', function(){  
   console.log('Socket Connected');
   io.emit('register', id);
   io.on('register', (regMsg) =>{
@@ -14,11 +14,7 @@ io.on('connect', function(socket){
     if(term != undefined)
       term.destroy();
     console.log("bye");
-  });
-})
-io.on('term', function (termMsg) {
-  console.log('Opening term');
-  
+  });  
 
  /*  term.on('data', function (data) {
     console.log(`terminal data size ${data.length}`);
@@ -83,9 +79,9 @@ io.on('term', function (termMsg) {
 
   // When socket disconnects, destroy the terminal
   io.on("disconnect", function () {
-    console.log(`disconnect data  ${data}`);
+    console.log(`disconnected`);
     term.destroy();
     isTerm = false;
     console.log("bye");
   });
-})
+});
