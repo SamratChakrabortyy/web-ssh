@@ -24,10 +24,10 @@
   <h1>SSH</h1>
 
   <div class="terminal">
-  <!--<ul id="messages"></ul>
+  <!--<ul id="messages"></ul>-->
   <form action="">
     <input id="m" autocomplete="off" /><button>Send</button>
-  </form>-->
+  </form>
 
   </div>
   <script>
@@ -72,8 +72,8 @@
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading
       var data = {};
-      data.from = "temp";
-      data.to = "temp"
+      data.from = id;
+      data.to = "ssh"
       data.body = $('#m').val();
       socket.emit('input', JSON.stringify(data));
       $('#m').val('');
@@ -82,13 +82,13 @@
     socket.on('input', function(msg){
       console.log('input', msg);
     })
-    socket.on('output', function(msg){
+    /* socket.on('output', function(msg){
       $('#messages').append($('<li>').text(JSON.parse(msg).body));
-    });
+    }); */
   });
 
   // Listen for user input and pass it to the server
-  $(document).on("keypress",function(e){
+ /*  $(document).on("keypress",function(e){
     var char = "";
     char = String.fromCharCode(e.which);
     let termMsg = {
@@ -97,7 +97,7 @@
           body : char
         };
     socket.emit("input", char);
-  });
+  }); */
 
   </script>
 </body>
