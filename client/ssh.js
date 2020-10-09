@@ -1,10 +1,23 @@
 var io = require("socket.io-client")('http://ws-control.machinesense.com:8080');
-var id = "ssh"
+var mac = require('macaddress');
+var id;
+
+function getMacAddress() {
+  mac.one('eth0', (err, mac) => {
+    if(err){
+      console.error("Error inding macaddress");
+      throw err;
+    }
+    return mac;
+  })
+}
 
 var pty = require('/usr/src/node-pty');
 var term;
-io.on('connect', function(){  
+io.on('connect', async function(){  
   console.log('Socket Connected');
+  id = await getMacAddress();
+  console.log(`Registering mac : ${id}`);
   io.emit('register', id);
   io.on('register', (regMsg) =>{
     console.log('Registation msg', regMsg);

@@ -33,16 +33,19 @@
   <script>
   // Connect to the socket.io server
   //var socket = io.connect('http://ws-control.machinesense.com:8080/');
-
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
   var socket = io();
-  var id = "web";
+  var id = 'web-'+getRandomInt(10000000);
+  var dest = location.pathname.split("/")[1];
   socket.on('connect', function(){
     console.log('socket Connected');
     socket.emit('register', id);
     socket.on('register', (msg) => {
       if(msg == 'successful'){
         let termMsg = {
-          to : 'ssh',
+          to : dest,
           from : id,
           body : 'term'
         };
