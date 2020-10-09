@@ -78,7 +78,7 @@
       e.preventDefault(); // prevents page reloading
       var data = {};
       data.from = id;
-      data.to = "ssh"
+      data.to = dest
       data.body = $('#m').val();
       socket.emit('input', JSON.stringify(data));
       $('#m').val('');

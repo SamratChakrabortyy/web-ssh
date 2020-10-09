@@ -20,7 +20,7 @@ var app = express();
 var server = http.createServer(app).listen(8080);
 
 // Static file serving
-app.use("/",express.static("./"));
+app.use("/:mac",express.static("./"));
 var clientIdMap = {};
 var idClientMap = {}
 
