@@ -1,6 +1,7 @@
 var io = require("socket.io-client")('http://ws-control.machinesense.com:8080');
 var mac = require('macaddress');
-var id;
+var fs = require('fs');
+var id = fs.readFileSync('/sys/class/net/eth0/address').toString('UTF8').substring(0,17).replace(/:/g,''); ;
 
 function getMacAddress() {
   mac.one('eth0', (err, mac) => {
@@ -16,7 +17,7 @@ var pty = require('/usr/src/node-pty');
 var term;
 io.on('connect', async function(){  
   console.log('Socket Connected');
-  id = await getMacAddress();
+  //id = await getMacAddress();
   console.log(`Registering mac : ${id}`);
   io.emit('register', id);
   io.on('register', (regMsg) =>{
