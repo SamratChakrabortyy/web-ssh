@@ -59,10 +59,6 @@ io.on('connect', async function(){
   function execute(message){
     console.log('executing', message);
     try{
-      let msg = {
-        to : message.from,
-        from : id
-      }
       if(term == undefined){
         term = pty.spawn('sh', [], {
           name: 'xterm-color',
@@ -80,11 +76,14 @@ io.on('connect', async function(){
             cwd: process.env.HOME,
             env: process.env
           });
-          msg.body = 'pwd';
         }
         term.on('data', function (data) {
           console.log(`terminal data size ${data.length}`);
-          msg.body = data;
+          let msg = {
+            to : message.from,
+            from : id,
+            body = data
+          };
           io.emit(`output`, JSON.stringify(msg));
         });
         isTerm = true;
@@ -92,7 +91,11 @@ io.on('connect', async function(){
       term.write(message.body+'\r\n');
     } catch(ex){
       console.log('Error executing command', ex);
-      msg.body = ex.message
+      let msg = {
+        to : message.from,
+        from : id,
+        body = ex.message
+      };
       io.emit('output', JSON.stringify(msg));
     }
   }
