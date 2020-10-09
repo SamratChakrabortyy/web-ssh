@@ -82,7 +82,7 @@ io.on('connect', async function(){
           let msg = {
             to : message.from,
             from : id,
-            body = data
+            body : data
           };
           io.emit(`output`, JSON.stringify(msg));
         });
@@ -94,7 +94,7 @@ io.on('connect', async function(){
       let msg = {
         to : message.from,
         from : id,
-        body = ex.message
+        body : ex.message
       };
       io.emit('output', JSON.stringify(msg));
     }
