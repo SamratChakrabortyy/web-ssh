@@ -1,7 +1,8 @@
+
 <!doctype html>
 <html>
 <head>
-  <title>SSH Client</title>
+  <title>MachineSense SSH Client</title>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
@@ -12,23 +13,33 @@
     }
 
     .terminal {
-      font-family: monospace;
-      color: white;
-      background: black;
+        font-family: monospace;
+        color: white;
+        display: block;
+        background: black;
+        width: 80%;
+        height: 500px;
+        margin: auto;
+        overflow: auto;
+        border-radius: 20px;
     }
   </style>
 </head>
 
 <body>
-  <h1>SSH</h1>
+  <h1 style="text-align: center;padding: 5px;">MachineSense SSH Client</h1>
 
   <div class="terminal">
   <!--<ul id="messages"></ul>-->
-  <form action="">
-    <input id="m" autocomplete="off" /><button>Send</button>
-  </form>
-
   </div>
+  <form action="" style="
+    margin: auto;
+    display: block;
+    width: 40%;
+    padding: 20px;">
+    <input id="m" class="input-msg" autocomplete="off" style="width: 80%;">
+    <button>Send</button>
+  </form>
   <script>
   // Connect to the socket.io server
   //var socket = io.connect('http://ws-control.machinesense.com:8080/');
@@ -38,6 +49,7 @@
   var socket = io();
   var id = 'web-'+getRandomInt(10000000);
   var dest = location.pathname.split("/")[1];
+  console.log('id', id);
   socket.on('connect', function(){
     console.log('socket Connected');
     socket.emit('register', id);
@@ -69,6 +81,8 @@
       }
       // Append the data to our terminal
       $('.terminal').append(data);
+      var conversation = document.querySelector('.terminal');
+      conversation.scrollTop = conversation.scrollHeight;
   });
 
   $(function () {
