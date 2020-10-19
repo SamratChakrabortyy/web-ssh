@@ -67,7 +67,7 @@ io.on('connect', async function(){
           cwd: process.env.HOME,
           env: process.env
         });
-        if(msg.body == 'term'){
+        if(message.body == 'term'){
           term.destroy();
           term = pty.spawn('sh', [], {
             name: 'xterm-color',
