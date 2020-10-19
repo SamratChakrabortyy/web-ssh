@@ -25,8 +25,6 @@ io.on('connect', async function(){
   })
   io.on("disconnect", function () {
     console.log(`disconnect `);
-    if(term != undefined)
-      term.destroy();
     console.log("bye");
   });  
 
