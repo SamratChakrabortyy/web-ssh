@@ -14,7 +14,7 @@ function getMacAddress() {
 }
 
 var pty = require('/usr/src/node-pty');
-var term;
+//var term;
 io.on('connect', async function(){  
   console.log('Socket Connected');
   //id = await getMacAddress();
@@ -59,6 +59,7 @@ io.on('connect', async function(){
   function execute(message){
     console.log('executing', message);
     try{
+      let term;
       if(term == undefined){
         term = pty.spawn('sh', [], {
           name: 'xterm-color',
@@ -67,7 +68,7 @@ io.on('connect', async function(){
           cwd: process.env.HOME,
           env: process.env
         });
-        if(message.body == 'term'){
+/*        if(message.body == 'term'){
           term.destroy();
           term = pty.spawn('sh', [], {
             name: 'xterm-color',
@@ -76,7 +77,7 @@ io.on('connect', async function(){
             cwd: process.env.HOME,
             env: process.env
           });
-        }
+        }*/
         term.on('data', function (data) {
           console.log(`terminal data size ${data.length}`);
           let msg = {
@@ -109,7 +110,7 @@ io.on('connect', async function(){
   io.on("disconnect", function () {
     console.log(`disconnected`);
     if(term != undefined)
-      term.destroy();
+   //   term.destroy();
     isTerm = false;
     console.log("bye");
   });
