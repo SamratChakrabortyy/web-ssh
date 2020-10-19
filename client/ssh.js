@@ -109,8 +109,6 @@ io.on('connect', async function(){
   // When socket disconnects, destroy the terminal
   io.on("disconnect", function () {
     console.log(`disconnected`);
-    if(term != undefined)
-   //   term.destroy();
     isTerm = false;
     console.log("bye");
   });
