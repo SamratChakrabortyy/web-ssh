@@ -21,7 +21,8 @@
         height: 500px;
         margin: auto;
         overflow: auto;
-        border-radius: 20px;
+        padding: 20px;
+        border-radius: 10px;
     }
   </style>
 </head>
@@ -37,7 +38,7 @@
     display: block;
     width: 40%;
     padding: 20px;">
-    <input id="m" class="input-msg" autocomplete="off" style="width: 80%;">
+    <input id="m" autocomplete="off" style="width: 80%;">
     <button>Send</button>
   </form>
   <script>
@@ -77,7 +78,7 @@
       let arr = msg.body.split(/\r\n/);
       let data = "";
       for(let idx in arr){
-        data += '<pr>'+arr[idx]+'</pr><br>';
+        data += '<p>'+arr[idx]+'</p>';
       }
       // Append the data to our terminal
       $('.terminal').append(data);
