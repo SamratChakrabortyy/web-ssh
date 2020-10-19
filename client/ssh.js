@@ -59,43 +59,42 @@ io.on('connect', async function(){
   function execute(message){
     console.log('executing', message);
     try{
-      if(term == undefined){
-        term = pty.spawn('sh', [], {
+      let msg = {
+        to : message.from,
+        from : id
+      }
+      let term = pty.spawn('sh', [], {
           name: 'xterm-color',
           cols: 80,
           rows: 30,
           cwd: process.env.HOME,
           env: process.env
         });
-        if(msg.body == 'term'){
-          term.destroy();
-          term = pty.spawn('sh', [], {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            cwd: process.env.HOME,
-            env: process.env
-          });
-        }
+        // if(message.body == 'term'){
+        //   term.destroy();
+        //   term = pty.spawn('sh', [], {
+        //     name: 'xterm-color',
+        //     cols: 80,
+        //     rows: 30,
+        //     cwd: process.env.HOME,
+        //     env: process.env
+        //   });
+        //   msg.body = 'pwd';
+        // }
         term.on('data', function (data) {
           console.log(`terminal data size ${data.length}`);
-          let msg = {
-            to : message.from,
-            from : id,
-            body : data
-          };
+          msg.body = data;
           io.emit(`output`, JSON.stringify(msg));
         });
         isTerm = true;
-      }
       term.write(message.body+'\r\n');
+      if(term != undefined){
+        term.destroy();
+        term = undefined
+      }
     } catch(ex){
       console.log('Error executing command', ex);
-      let msg = {
-        to : message.from,
-        from : id,
-        body : ex.message
-      };
+      msg.body = ex.message
       io.emit('output', JSON.stringify(msg));
     }
   }
@@ -108,9 +107,6 @@ io.on('connect', async function(){
   // When socket disconnects, destroy the terminal
   io.on("disconnect", function () {
     console.log(`disconnected`);
-    if(term != undefined)
-      term.destroy();
-    isTerm = false;
     console.log("bye");
   });
 });
