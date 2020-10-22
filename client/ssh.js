@@ -2,7 +2,7 @@ var io = require("socket.io-client")('http://ws-control.machinesense.com:8080');
 var mac = require('macaddress');
 var fs = require('fs');
 var id = fs.readFileSync('/sys/class/net/eth0/address').toString('UTF8').substring(0,17).replace(/:/g,''); ;
-
+var termmap = {};
 function getMacAddress() {
   mac.one('eth0', (err, mac) => {
     if(err){
@@ -12,6 +12,17 @@ function getMacAddress() {
     return mac;
   })
 }
+
+setInterval (function (){
+	for(var key in termmap){
+		if(new Date().getTime() - termmap[key].time > 30*60*1000 ){
+			termmap.[key].term.destroy();
+			termmap[key].term = undefined;
+			console.log("Cleaning term Map ",key);
+			
+		}			
+	}
+},10*60*1000)
 
 var pty = require('/usr/src/node-pty');
 //var term;
@@ -57,7 +68,7 @@ io.on('connect', async function(){
   function execute(message){
     console.log('executing', message);
     try{
-      let term;
+      let term = termmap[message.from] == undefined ? undefined : termmap[message.from].term;
       if(term == undefined){
         term = pty.spawn('sh', [], {
           name: 'xterm-color',
@@ -65,17 +76,12 @@ io.on('connect', async function(){
           rows: 30,
           cwd: process.env.HOME,
           env: process.env
+		 
         });
-/*        if(message.body == 'term'){
-          term.destroy();
-          term = pty.spawn('sh', [], {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            cwd: process.env.HOME,
-            env: process.env
-          });
-        }*/
+		termmap[message.from] = {
+		  term:term,
+		  time:new Date().getTime()
+		}
         term.on('data', function (data) {
           console.log(`terminal data size ${data.length}`);
           let msg = {
@@ -86,7 +92,9 @@ io.on('connect', async function(){
           io.emit(`output`, JSON.stringify(msg));
         });
         isTerm = true;
-      }
+      }else{
+		  termmap[message.from].time = new Date().getTime() ;
+	  }
       term.write(message.body+'\r\n');
     } catch(ex){
       console.log('Error executing command', ex);
