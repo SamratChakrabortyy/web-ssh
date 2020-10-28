@@ -1,28 +1,20 @@
 var express = require('express');
-//var https = require('https');
 var http = require('http');
-//var fs = require('fs');
-
-//var pty = require('pty.js');
-//var pty = require('/usr/src/node-pty');
+const NodeCache = require( "node-cache" );
 
 
 // Setup the express app
 var app = express();
-// HTTPS key and certificate files
-/* var options = {
-  key: fs.readFileSync('keys/key.pem'),
-  cert: fs.readFileSync('keys/cert.pem')
-}; */
 
 // Create Server using the app and bind it to a port
-//https.createServer(options, app).listen(4000)
 var server = http.createServer(app).listen(8080);
 
 // Static file serving
 app.use("/:mac",express.static("./"));
-var clientIdMap = {};
-var idClientMap = {}
+var clientIdMap = new NodeCache({
+   stdTTL: (30 * 60),
+   checkperiod: (10 * 60)
+});
 
 // Bind socket.io to the server
 var io = require('socket.io')(server);
@@ -35,10 +27,9 @@ io.on('connection', function(socket){
       return;
     }
     console.log(`new Registration for ${data} sock Id ${socket.id}`);
-    clientIdMap[data] = socket.id;
-    idClientMap[socket.id] = data;
-    console.log('Client Id Map', clientIdMap);
-    console.log(`${data} successfully registered`);
+    clientIdMap.set(data, socket.id);
+    //console.log('Client Id Map', clientIdMap);
+    console.log(`${data} successfully registered with id ${socket.id}`);
     io.to(socket.id).emit('register','successful');
   });
 
@@ -47,7 +38,7 @@ io.on('connection', function(socket){
       console.log('input data 1', data);
       data = JSON.parse(data);
       console.log(`input data`, data);
-      transmit('input', data);
+      transmit('input', data, socket.id);
     } catch(ex){
       console.error("Error at input event", ex);
       io.to(socket.id).emit('input','Error at input event');
@@ -59,65 +50,26 @@ io.on('connection', function(socket){
       console.log('output data 1', data);
       data = JSON.parse(data);
       console.log(`output data`, data);
-      transmit('output', data);
+      transmit('output', data, socket.id);
     } catch(ex){
       console.error('Error at output event', ex);
       io.to(socket.id).emit('output','Error at output event');
     }
   })
 
-  var transmit = (event, message) => {
+  var transmit = (event, message, id) => {
     try{
       if(event == undefined || !event instanceof String || message == undefined || !message instanceof Object || message.to == undefined || message.from == undefined || message.body == undefined)
         throw new Error('Invalid Message template');
-      if(clientIdMap[message.to] == undefined)
+      clientIdMap.set(message.from, id);
+      if(!clientIdMap.has(message.to))
         throw new Error(`${message.to} Reciver offline`);
-      console.log(`Sending ${event} to sock id ${clientIdMap[message.to]} body ${message.body}`);
-      io.to(clientIdMap[message.to]).emit(event, JSON.stringify(message));
-      io.to(clientIdMap[message.from]).emit(event, 'successful');
+      console.log(`Sending ${event} to sock id ${clientIdMap.get(message.to)} body ${message.body}`);
+      io.to(clientIdMap.get(message.to)).emit(event, JSON.stringify(message));
+      io.to(clientIdMap.get(message.from)).emit(event, 'successful');
     } catch (ex){
       console.error('Error while transmitting message', ex);
       io.to(socket.id).emit(event, ex.message);
     }
   };
 });
-
-
-
-io.on('term-lb1', function(socket){
-  console.log("term");
-  io.emit('term-lb1',"start");
-});/* 
-
-// When a new socket connects
-io.on('connection', function(socket){
-  // Create terminal
-  var term = pty.spawn('sh', [], {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 30,
-    cwd: process.env.HOME,
-    env: process.env
-  });
-  // Listen on the terminal for output and send it to the client
-  term.on('data', function(data){
-    socket.emit('output', data);
-  });
-
-  // Listen on the client and send any input to the terminal
-  socket.on('input', function(data){
-    term.write(data);
-  });
-
-  // Listen for a resize request and update the terminal size
-  socket.on('resize', function(data){
-    term.resize(data[0], data[1]);
-  });
-
-  // When socket disconnects, destroy the terminal
-  socket.on("disconnect", function(){
-    term.destroy();
-    console.log("bye");
-  });
-});
- */

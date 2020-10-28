@@ -25,12 +25,15 @@ setInterval (function (){
 },10*60*1000)
 
 var pty = require('/usr/src/node-pty');
-//var term;
 io.on('connect', async function(){  
   console.log('Socket Connected');
-  //id = await getMacAddress();
+
   console.log(`Registering mac : ${id}`);
   io.emit('register', id);
+  setInterval(function(){
+    console.log(`Registering mac : ${id}`);
+    io.emit('register', id);
+  }, 15*60*1000);
   io.on('register', (regMsg) =>{
     console.log('Registation msg', regMsg);
   })
@@ -39,15 +42,7 @@ io.on('connect', async function(){
     console.log("bye");
   });  
 
- /*  term.on('data', function (data) {
-    console.log(`terminal data size ${data.length}`);
-    let msg = {
-      to : termMsg.from,
-      from : id,
-      body : data
-    }
-    io.emit(`output`, JSON.stringify(msg));
-  }); */
+ 
   var isTerm = false;
   io.on(`input`, function (message) {
     try{
