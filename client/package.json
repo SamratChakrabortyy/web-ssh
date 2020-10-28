@@ -4,7 +4,6 @@
   "description": "",
   "main": "ssh.js",
   "dependencies": {
-    "macaddress": "^0.5.1",
     "socket.io-client": "^2.3.1"
   },
   "devDependencies": {},
