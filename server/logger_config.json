@@ -1,0 +1,19 @@
+{
+	"appenders": {
+		"consolelog": {
+			"type": "console"
+		},
+		"accesslog": {
+			"type": "file",
+			"filename": "/var/log/web-ssh-server.log"
+		}
+	},
+	"categories": {
+		"default": {
+			"level": "debug",
+			"appenders": [
+				"accesslog"
+			]
+		}
+	}
+}
