@@ -10,9 +10,9 @@
 	},
 	"categories": {
 		"default": {
-			"level": "debug",
+			"level": "info",
 			"appenders": [
-				"accesslog"
+				"accesslog",
 			]
 		}
 	}

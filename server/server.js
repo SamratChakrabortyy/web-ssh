@@ -22,6 +22,8 @@ var clientIdMap = new NodeCache({
 	checkperiod: (10 * 60),
 });
 
+clientIdMap.flushAll();
+clientIdMap.flushStats();
 
 /**
  * sessionMap will contain metadata about the session. Values of session map will be like: 
@@ -35,26 +37,8 @@ var sessionMap = new NodeCache({
 	useClones: false
 });
 
-/**
- * SessionDataMap will contain the actual input output of the session. 
- * On expiry this data will be flushed into the file opened for this particulat session. 
- */
-/* var sessionDataMap = new NodeCache({
-	stdTTL: 30,
-	checkperiod: 10,
-	useClones: false,
-})
-
-//Flushing data on deletion from cache
-sessionDataMap.on('del', (key, val) => {
-	try{
-		let stream = sessionMap.get(key).stream;
-		stream.write(val);
-	} catch (ex){
-		logger.error('Error on delete event of sessionDataMap', ex);
-	}
-
-}); */
+sessionMap.flushStats();
+sessionMap.flushAll();
 
 function formatCurrDate() {
     let d = new Date(),
@@ -76,13 +60,16 @@ function formatCurrTime() {
         min = '' + d.getMinutes()
 
     if (hr.length < 2) 
-        hr = '0' + month;
+        hr = '0' + hr;
     if (min.length < 2) 
-        min = '0' + day;
+        min = '0' + min;
 
-    return [hr, min].join('-');
+    return `${hr}${min}`;
 }
-
+function addToCache(name, id){
+	clientIdMap.set(name, id);
+	clientIdMap.set(id,name);
+}
 // Bind socket.io to the server
 var io = require('socket.io')(server);
 io.on('connection', function (socket) {
@@ -94,7 +81,7 @@ io.on('connection', function (socket) {
 			return;
 		}
 		logger.info(`new Registration for ${data} sock Id ${socket.id}`);
-		clientIdMap.set(data, socket.id);
+		addToCache(data, socket.id);
 		//logger.info('Client Id Map', clientIdMap);
 		logger.info(`${data} successfully registered with id ${socket.id}`);
 		io.to(socket.id).emit('register', 'successful');
@@ -113,14 +100,15 @@ io.on('connection', function (socket) {
 			} 
 			let date = formatCurrDate(),
 				time = formatCurrTime(),
-				fileName = `${time}.log`,
+				fileName = `${sessionData.id}-${time}.log`,
 				dir = `${sessionDirBasePath}/${date}/${sessionData.dest}`;
 			//checking if folder Exista
 			if(!fs.existsSync(dir)){
-				fs.mkdir(dir);
+				fs.mkdirSync(dir, {
+					recursive: true
+				})
 			}
 			let writeStream = fs.createWriteStream(`${dir}/${fileName}`, {flags:'a'});
-			writeStream.write()
 			// Saving sessionMap data
 			sessionMap.set(sessionData.id, {
 				dest: sessionData.dest,
@@ -147,7 +135,7 @@ io.on('connection', function (socket) {
 	socket.on('output', (data) => {
 		try {
 			let message = JSON.parse(data);
-			transmit('output', data, socket.id);
+			transmit('output', message, socket.id);
 			if(message == undefined || !message instanceof Object || message.to == undefined || message.from == undefined || message.body == undefined)
 				throw new Error('Invalid Output data format');
 			/* let sessionData = sessionDataMap.has(data.to) ? sessionDataMap.get(data.to) : "";
@@ -160,16 +148,27 @@ io.on('connection', function (socket) {
 			logger.error('Error at output event', ex);
 			io.to(socket.id).emit('output', 'Error at output event');
 		}
-	})
+	});
+
+	socket.on('disconnect', (data) => {
+		try{
+			let id = clientIdMap.get(socket.id);
+			clientIdMap.del(socket.id);
+			clientIdMap.del(id);
+			logger.info(`${id} disconnected. Cleaning  up!`);
+		} catch(ex){
+			logger.error('Error on disconnect',ex);
+		}
+	});
 
 	var transmit = (event, message, id) => {
 		try {
 			if (event == undefined || !event instanceof String || message == undefined || !message instanceof Object || message.to == undefined || message.from == undefined || message.body == undefined)
 				throw new Error('Invalid Message template');
-			clientIdMap.set(message.from, id);
+			addToCache(message.from, id);
 			if (!clientIdMap.has(message.to))
 				throw new Error(`${message.to} Reciver offline`);
-			logger.info(`Sending ${event} to sock id ${clientIdMap.get(message.to)} msg ${message} `);
+			logger.debug(`Sending ${event} to sock id ${clientIdMap.get(message.to)} msg `, message);
 			io.to(clientIdMap.get(message.to)).emit(event, JSON.stringify(message));
 			io.to(clientIdMap.get(message.from)).emit(event, 'successful');
 		} catch (ex) {
@@ -178,12 +177,19 @@ io.on('connection', function (socket) {
 		}
 	};
 
-	clientIdMap.on('expired', (key, val) => {
-		let session = sessionMap.get(key);
-		logger.info(`Ending session with ${session.dest} and saving the file at ${session.fileName}`);
-		stream.end();
-		sessionMap.del(key);
-		io.to(val).emit('session_end','session_end');
+	clientIdMap.on('del', (key, val) => {
+		try{
+			if(sessionMap.has(key)){
+				let session = sessionMap.get(key);
+				logger.info(`Ending session with ${session.dest} and saving the file at ${session.fileName}`);
+				session.stream.end();
+				sessionMap.del(key);
+				io.to(val).emit('session_end',key);
+				io.to(clientIdMap.get(session.dest)).emit('session_end',key);
+			}
+		} catch (ex){
+			logger.error('Error on xpired event of clientIdMap', ex)
+		}
 	});
 
 });
