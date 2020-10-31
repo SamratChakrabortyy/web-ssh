@@ -11,7 +11,7 @@ const sessionDirBasePath = "/var/log/web-ssh-sessions"
 var app = express();
 
 // Create Server using the app and bind it to a port
-var server = http.createServer(app).listen(8080);
+var server = http.createServer(app).listen(4050);
 
 // Static file serving
 app.use("/:mac", express.static("./"));

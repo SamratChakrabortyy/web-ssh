@@ -1,7 +1,7 @@
-const io = require("socket.io-client")('http://localhost:8080'), // socket-io Client
+const io = require("socket.io-client")('http://diag.machinesense.com:4050'), // socket-io Client
  NodeCache = require("node-cache") 
  fs = require('fs')
- id = fs.readFileSync('/sys/class/net/enp3s0/address').toString('UTF8').substring(0, 17).replace(/:/g, '') // mac id of the device
+ id = fs.readFileSync('/sys/class/net/eth0/address').toString('UTF8').substring(0, 17).replace(/:/g, '') // mac id of the device
  termmap = new NodeCache({   //cache for cahing the terminals for each of the sessions
   stdTTL: (30 * 60),
   checkperiod: (10 * 60),

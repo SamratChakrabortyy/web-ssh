@@ -12,7 +12,7 @@
 		"default": {
 			"level": "info",
 			"appenders": [
-				"accesslog",
+				"accesslog"
 			]
 		}
 	}
