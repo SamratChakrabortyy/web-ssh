@@ -50,21 +50,41 @@
   var socket = io();
   var id = 'web-'+getRandomInt(10000000);
   var dest = location.pathname.split("/")[1];
+  var isActiveSession = false;
   console.log('id', id);
-  socket.on('connect', function(){
-    console.log('socket Connected');
-    socket.emit('register', id);
-    socket.on('register', (msg) => {
-      if(msg == 'successful'){
-        let termMsg = {
-          to : dest,
-          from : id,
-          body : 'ifconfig'
-        };
-        socket.emit('input', JSON.stringify(termMsg));
-      }
-    })
-  });
+  socket.on('connect', function () {
+      console.log('socket Connected');
+
+      // Registering socket Id againt the sessioId of the socket
+      socket.emit('register', id);
+      socket.on('register', (msg) => {
+        console.log('On Register', msg);
+        if (msg == 'successful') {
+          let sessionData = {
+            id,
+            dest
+          };
+          // Starting session
+          socket.emit('session_start', JSON.stringify(sessionData));
+          socket.on('session_start', (sessionMsg) => {
+            if (sessionMsg == 'successful') {
+              isActiveSession = true;
+              // Sending 'ifconfig' as the first command to the recepient
+              let termMsg = {
+                to: dest,
+                from: id,
+                body: 'ifconfig'
+              };
+              socket.emit('input', JSON.stringify(termMsg));
+            }
+          });
+          socket.on('session_end', (endMsg) => {
+            console.log('Session Ended');
+            isActiveSession = false;
+          });
+        }
+      });
+    });
   //socket.on('event', function(data){});
   socket.on('disconnect', function(){
     console.log('socket disconnected');
@@ -90,12 +110,17 @@
     //var socket = io();
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading
-      var data = {};
-      data.from = id;
-      data.to = dest
-      data.body = $('#m').val();
-      socket.emit('input', JSON.stringify(data));
-      $('#m').val('');
+      if(isActiveSession){
+        var data = {};
+        data.from = id;
+        data.to = dest
+        data.body = $('#m').val();
+        socket.emit('input', JSON.stringify(data));
+        $('#m').val('');
+      } else {
+        console.log('Session Inactive. Throwing allert');
+        window.alert('Session Inactive. Refresh the page');
+      }
       return false;
     });
     socket.on('input', function(msg){
