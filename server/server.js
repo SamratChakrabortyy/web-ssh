@@ -124,8 +124,13 @@ io.on('connection', function (socket) {
 
 	socket.on('input', (data) => {
 		try {
-			data = JSON.parse(data);
-			transmit('input', data, socket.id);			
+			let message = JSON.parse(data);
+			/* if(!isValidMsg(message))
+				throw new Error('Inavlid input data format'); */
+			if(message.body.toLowerCase().trim() === "stop"){
+				message.body = String.fromCharCode(3);
+			}
+			transmit('input', message, socket.id);
 		} catch (ex) {
 			logger.error("Error at input event", ex);
 			io.to(socket.id).emit('input', 'Error at input event');
