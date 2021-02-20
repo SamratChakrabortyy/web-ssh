@@ -1,0 +1,9 @@
+{
+    "socketServerEndpoint": "https://localhost:4050/",
+    "macAddressFilePath": "/sys/class/net/enp3s0/address",
+    "nodePtyPath": "/usr/src/node-pty",
+    "terminalSize" : {
+        "rows": 96,
+        "cols": 20
+    }
+}

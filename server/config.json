@@ -1,0 +1,19 @@
+{
+    "isHttpsEnabled": true,
+    "port": 4050,
+    "httpsOptions": {
+        "key": "/var/tmp/tmp-files/certs/star.machinesense.key",
+        "cert": "/var/tmp/tmp-files/certs/star_machinesense_com_bundle.crt"
+    },
+    "sessionDirBasePath": "/var/log/web-ssh/sessions",
+    "maxIdleTimeInMin": 30,
+    "maxSessionTimeinMin": 60,
+    "loopbackEndPoint": "http://40.87.93.175:5000",
+    "maxConcurrentSessionPerDH": 4,
+    "maxConcurrentSession": 12,
+    "sessionDirRoot": "/var/log/web-ssh/client-root",
+    "jupyterconfig": "/usr/src/web-ssh/server/jupyterConfig.py",
+    "jupyterNotebookBasePath": "/root/.local/share/jupyter/runtime/",
+    "jupyterFilePattern": "nbserver-[PID]-open.html",
+    "jupyterPath": "/usr/local/bin/jupyter-notebook"
+}

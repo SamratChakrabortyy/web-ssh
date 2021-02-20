@@ -3,16 +3,33 @@
 		"consolelog": {
 			"type": "console"
 		},
-		"accesslog": {
+		"fileLog": {
 			"type": "file",
-			"filename": "/var/log/web-ssh-server.log"
+			"filename": "/var/log/web-ssh/server.log"
+		},
+		"accessLog": {
+			"type": "file",
+			"filename": "/var/log/web-ssh/access.log"
 		}
 	},
 	"categories": {
 		"default": {
+			"level": "debug",
+			"appenders": [
+				"fileLog",
+				"consolelog"
+			]
+		},
+		"access": {
 			"level": "info",
 			"appenders": [
-				"accesslog"
+				"accessLog"
+			]
+		},
+		"HTTP": {
+			"level": "info",
+			"appenders": [
+				"accessLog"
 			]
 		}
 	}

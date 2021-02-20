@@ -1,0 +1,15 @@
+[I 02:02:30.688 NotebookApp] Serving notebooks from local directory: /usr/local/src/web-ssh
+[I 02:02:30.688 NotebookApp] Jupyter Notebook 6.1.5 is running at:
+[I 02:02:30.688 NotebookApp] http://localhost:9999/?token=17b750a02d79c7a1fad65de5fc1fdebf47f4b78cfa057d56
+[I 02:02:30.688 NotebookApp]  or http://127.0.0.1:9999/?token=17b750a02d79c7a1fad65de5fc1fdebf47f4b78cfa057d56
+[I 02:02:30.689 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 02:02:30.696 NotebookApp] 
+    
+    To access the notebook, open this file in a browser:
+        file:///home/samrat/.local/share/jupyter/runtime/nbserver-27619-open.html
+    Or copy and paste one of these URLs:
+        http://localhost:9999/?token=17b750a02d79c7a1fad65de5fc1fdebf47f4b78cfa057d56
+     or http://127.0.0.1:9999/?token=17b750a02d79c7a1fad65de5fc1fdebf47f4b78cfa057d56
+[I 02:02:33.726 NotebookApp] Interrupted...
+[I 02:02:33.727 NotebookApp] Shutting down 0 kernels
+[I 02:02:33.728 NotebookApp] Shutting down 0 terminals

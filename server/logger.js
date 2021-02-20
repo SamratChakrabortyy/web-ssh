@@ -11,9 +11,11 @@ log4js_extend(log4js, {
 });
 
 const logger = log4js.getLogger('[web-ssh]');
-const httpLogger = log4js.getLogger('[HTTP]');
+const httpLogger = log4js.getLogger('HTTP');
+const accessLogger = log4js.getLogger('access');
 logger.info('Logger Enabled');
 
 exports.logger = logger;
 exports.httpLogger = httpLogger;
+exports.accessLogger = accessLogger;
 
