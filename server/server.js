@@ -6,7 +6,7 @@ const log4js = require('log4js');
 const { httpLogger, logger } = require('./logger');
 const config = require('./config.json');
 const PORT = config.port;
-const apiOtp = require('./routes/otp');
+const apiOtp = require('./routes/auth');
 const { sessionMap } = require('./caches');
 const { initiateSocketController } = require('./socketController');
 const notebookService = require('./service/notebookService');
@@ -28,6 +28,7 @@ if(config.isHttpsEnabled){
 	server = http.createServer(app);
 }
 server.listen(PORT);
+app.use(express.static("./views/static"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(log4js.connectLogger(httpLogger, {

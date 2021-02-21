@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { logger, accessLogger } = require("../logger");
-const otpService = require('../service/OTPService');
-router.get('/generateotp/:mobileno/:macaddress', async (req, res, next) => {
+const authSerivce = require('../service/authenticationService');
+router.get('/vaerifyUser/:user/:macaddress', async (req, res, next) => {
   try {
-    var mobileNo = req.params.mobileno;
+    var user = req.params.user;
     var dhMac = req.params.macaddress;
-    accessLogger.info(`OTP generation reqest recieved from ${mobileNo} for ${dhMac}`);
-    var response = await otpService.generateOTP(mobileNo, dhMac);
+    accessLogger.info(`User validation reqrecieved from ${user} for ${dhMac}`);
+    var response = await authSerivce.validateUser(user, dhMac);
     if (response.success) {
       res.send({
         data: response,
@@ -38,7 +38,7 @@ router.get('/verifyotp/:macaddress/:otp/:mobileno', async (req, res, next) => {
     var dhMac = req.params.macaddress;
     var mobileNo = req.params.mobileno;
     accessLogger.info(`Request to verify OTP for `, mobileNo, dhMac, otp);
-    var response = await otpService.verifyAndExpireOTP(otp, dhMac, mobileNo);
+    var response = await authSerivce.verifyAndExpireOTP(otp, dhMac, mobileNo);
     if (response.success) {
       res.send({
         id: response.id,
